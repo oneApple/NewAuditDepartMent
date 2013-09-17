@@ -54,7 +54,6 @@ class RecvSignElgamal1(MsgHandleInterface.MsgHandleInterface,object):
             import string
             session.elgamal = Elgamal.Elgamal(*[string.atol(s) for s in _plaint[1:]])
             import struct
-            print msgList[4],eval(msgList[4])
             self.__recvelgamal1 = struct.unpack(msgList[3],eval(msgList[4]))
             showmsg = "A组签名的elgamal加密验证"#：\n(1)接受到的第一次加密:" + repr(",".join(self.__recvelgamal1))            
             self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT,showmsg,True)
@@ -64,8 +63,6 @@ class RecvSignElgamal1(MsgHandleInterface.MsgHandleInterface,object):
     
     def HandleMsg(self,bufsize,session):
         recvbuffer = NetSocketFun.NetSocketRecv(session.sockfd,bufsize)
-        print recvbuffer
-        print len(recvbuffer)
         msgList = recvbuffer.split(CommonData.MsgHandlec.PADDING)
         if self.handRecvMsg(session, msgList):
             msgbody = self.packMsgBody(session)

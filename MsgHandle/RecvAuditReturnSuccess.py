@@ -4,6 +4,8 @@ _metaclass_ = type
 from MsgHandle import MsgHandleInterface
 from DataBase import MediaTable
 from GlobalData import MagicNum, CommonData
+from NetCommunication import NetSocketFun
+import struct
 
 class RecvAuditReturnSuccess(MsgHandleInterface.MsgHandleInterface,object):
     "身份验证成功"
@@ -22,5 +24,9 @@ class RecvAuditReturnSuccess(MsgHandleInterface.MsgHandleInterface,object):
         _db.CloseCon()
         self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_REFRESHFILETABLE, "")
         self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, "内容端接收("+ _medianame +")及参数成功",True)
+        _msghead = self.packetMsg(MagicNum.MsgTypec.REQCLOSEMSG, 0)
+        NetSocketFun.NetSocketSend(session.sockfd,_msghead)
+        session.stop()
+        
         
         

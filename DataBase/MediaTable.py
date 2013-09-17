@@ -48,5 +48,4 @@ if __name__=='__main__':
     #a.AddNewMedia(["a.mkv","b","signParam","sign","hash"])
     a.deleteMedia("视频源.mpg".decode("utf-8"), "cp")
     #a.AlterMedia("username", "a", "小.mpg".decode("utf-8"), "cp")
-    print a.Search("select * from MediaTable")
     a.CloseCon()

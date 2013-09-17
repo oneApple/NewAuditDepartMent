@@ -24,11 +24,11 @@ class NetThread(threading.Thread):
             if len(recvbuffer) == 0 or (len(recvbuffer) != struct.calcsize(CommonData.MsgHandlec.MSGHEADTYPE)):
                 break
             recvmsghead = struct.unpack(CommonData.MsgHandlec.MSGHEADTYPE,recvbuffer)
-            print recvmsghead
+            #print recvmsghead
             _MsgHandleMap.getMsgHandle(recvmsghead[0]).HandleMsg(recvmsghead[1],self)
         #跳出循环，线程结束，关闭socket
-        print "thread close"
         self.sockfd.close()
+        print "thread close"
         #self.control.StopNetConnect()
 
 

@@ -39,6 +39,7 @@ class SendCgroupSignAndParam(MsgHandleInterface.MsgHandleInterface,object):
         _sign = _rsa.SignByPrikey(_hbs.GetHash(_cgroup[1].encode("ascii"),MagicNum.HashBySha1c.HEXADECIMAL))
         _msgbody = _pubkeyMsg + CommonData.MsgHandlec.PADDING + _sign + CommonData.MsgHandlec.PADDING + _cgroup[1].encode("ascii")
         showmsg = "发送采样结果：\n(1)C组参数：" + ",".join(_cgroup[0]) + "\n(2)C组采样:" + _cgroup[1] + "\n(3)C组采样签名：" + _sign 
+        showmsg += "\n等待文件验证..."
         self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
         return _msgbody
     

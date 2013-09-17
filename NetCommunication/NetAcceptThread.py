@@ -42,7 +42,6 @@ class NetAcceptThread(threading.Thread):
                     c.close()
                 elif event & select.EPOLLHUP:
                     _epoll.unregister(fileno)
-                    print "canont listend"
                     self.__runflag = False
                     break
         self._listenfd.close();
@@ -55,7 +54,6 @@ class NetAcceptThread(threading.Thread):
             
     def stop(self):
         "关闭所有线程"
-        print "stop accpet"
         while self.__threadlist:
             th = self.__threadlist[0]
             self.closeNetThread(th)
