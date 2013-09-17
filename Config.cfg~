@@ -1,0 +1,16 @@
+[database]
+path:./DbRes/p2plc.db
+[ico]
+path:./ico/logo.jpg
+[keys]
+path:./keys
+[listenaddress]
+ip:localhost
+port:18080
+[ffmpeg]
+path:./ffmpeg/ffmpeg
+args:./ffmpeg/args
+[yvector]
+path:/home/keym/project/auditnew/AuditNew/
+[media]
+path:/home/keym/project/auditnew/AuditNew/media

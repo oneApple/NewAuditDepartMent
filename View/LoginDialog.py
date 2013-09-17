@@ -1,0 +1,45 @@
+# -*- coding: UTF-8 -*-
+import wx
+
+import ValidaDialog
+import RegisterDialog
+from GlobalData import MagicNum
+from DataBase import APUserTable
+
+class LoginDialog(ValidaDialog.ValidaDialog,object):
+    def __init__(self):
+        super(LoginDialog,self).__init__("登录",MagicNum.ValidaDialogc.IMAGEBUTTON)
+    
+    def getTextLabel(self):
+        _labelList = ["用户名", "密码"]
+        return _labelList
+    
+    def getHeaderText(self):
+        _text = """\
+                   审 核 部 门\
+                """
+        return _text
+    
+    def secondButtonFun(self):
+        _inputlist = self.getInputText()
+        _db = APUserTable.APUserTable()
+        _db.Connect()
+        if not _db.VerifyNamePsw(_inputlist[0], _inputlist[1]):
+            self.tryAgain("用户名或密码错误,请重新输入")
+        else:
+            self.SwitchView(_inputlist[0])
+        _db.CloseCon()
+    
+    def registerButtonFun(self,event):
+        self.Destroy()
+        _dlg = RegisterDialog.RegisterDialog()
+        _dlg.Run()
+
+if __name__ == "__main__":
+    app = wx.PySimpleApp()
+    dlg = LoginDialog()
+    dlg.Run()
+    app.MainLoop()
+        
+        
+

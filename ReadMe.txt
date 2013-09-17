@@ -1,0 +1,44 @@
+登录过程：
+接受到REQLOGINMSG消息：SendLoginResult()验证用户名是否存在,如果成功则发送权限LOGINSUCCESS，否则LOGINFAIL
+
+审核过程：
+
+REQAUDITMSG:RecvFilename：收到文件名后打开文件准备写，REQDHPANDPUBKEY
+
+SENDDHPANDPUBKEY RecvAndSendDh 接受对方发来的迪菲参数p和公钥，首先验证签名是否正确，如果错误关闭线程并发送IDENTITYVERIFYFAILED，
+如果正确则生成会话密钥，并发送自己的公钥和签名，SENDDHPUBKEY 
+
+AUDITDHGENERATE :RecvAuditDhGenerate:双方会话密钥生成成功,发送REQFILEBUFFER请求
+
+SENDFILEBUFFER:RecvFileBuffer：接受文件,REQFILEBUFFER
+
+SENDFILEOVER:RecvAllFile：接受文件，并关闭文件 REQAGROUP
+
+SENDAGROUP:RecvAgroupSignAndParam:收到a组参数和a组签名，利用收到的参数在本地采样，然后利用这个参数与a组签名进行验证 RECVMEDIASUCCESS
+
+审核返回过过程：
+发送REQAUDITRETURN消息，并保存文件名
+
+SENDDHPANDPUBKEY RecvAndSendDh 接受对方发来的迪菲参数p和公钥，首先验证签名是否正确，如果错误关闭线程并发送IDENTITYVERIFYFAILED，
+如果正确则生成会话密钥，并发送自己的公钥和签名，SENDDHPUBKEY 
+
+AUDITRETURNDHGENERATE:SendFileBuffer:双方会话密钥生成成功,发送文件，如果未发送完SENDFILEBUFFER，否则SENDFILEOVER
+
+REQFILEBUFFER:SendFileBuffer,发送文件内容，如果未发送完SENDFILEBUFFER，否则SENDFILEOVER
+
+REQCGROUP:SendCgroupSignAndParam：发送c组参数和hash（签名）SENDCGROUP
+
+AUDITRETURNSUCCESS：RecvAuditReturnSuccess： 接收接收成功，并改变状态
+
+责任认定过程：
+REQIDENTIFIED:SendDhPAndPubkey:发送迪菲参数p和公钥，及该消息的签名 SENDDHPANDPUBKEY
+
+SENDDHPUBKEY:RecvDhPubkeyAndSendDhGenerateSuccess: 接受对方传来的dh公钥，同时计算生成会话密钥 AUDITRETURNDHGENERATE
+
+SENDSIGNELGAMAL1:RecvSignElgamal1 : 接受elgamal参数及第一次加密结果，并生成第一，二次加密结果 SENDSIGNELGAMAL12
+
+SENDHASHELGAMAL1:RecvHashElgamal1 : 接受elgamal参数及第一次加密结果，并生成第一，二次加密结果 SENDHASHELGAMAL12
+
+
+
+
