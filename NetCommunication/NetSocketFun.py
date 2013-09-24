@@ -54,8 +54,6 @@ def NetUnPackMsgBody(msgstr):
     from GlobalData import CommonData
     import struct
     sp = msgstr.index(CommonData.MsgHandlec.PADDING) 
-    print msgstr[:sp]
-    print len(msgstr[sp + len(CommonData.MsgHandlec.PADDING):])
     return struct.unpack(msgstr[:sp].encode("ascii"),msgstr[sp + len(CommonData.MsgHandlec.PADDING):])
 
     

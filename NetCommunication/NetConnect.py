@@ -24,7 +24,7 @@ class NetConnect:
         
         import wx
         from wx.lib.pubsub  import Publisher
-        wx.CallAfter(Publisher().sendMessage,CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT,["请求审核返回文件(" + _msgbody + ")",False])
+        wx.CallAfter(Publisher().sendMessage,CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT,["请求审核返回文件(" + msglist[0] + ")",False])
         
     def StartNetConnect(self,ip,port):
         "连接服务器并开启网络线程"
