@@ -31,14 +31,14 @@ class SendFileList(MsgHandleInterface.MsgHandleInterface,object):
                     break
                 if _res[0][5] == MagicNum.MediaTablec.AUDIT:
                     _singleFile = [filename.encode("utf8"),owner.encode("utf8")]
-                    _filelist.append(CommonData.MsgHandlec.PADDING.join(_singleFile))
+                    _filelist.append(NetSocketFun.NetPackMsgBody(_singleFile))
             
         return _filelist
     
     def HandleMsg(self,bufsize,session):
         
         _fileList = self.getFileList()
-        _msgbody =  CommonData.MsgHandlec.PADDING.join(_fileList)
+        _msgbody =  NetSocketFun.NetPackMsgBody(_fileList)
         _msghead = self.packetMsg(MagicNum.MsgTypec.SENDFILELIST, len(_msgbody))
         NetSocketFun.NetSocketSend(session.sockfd,_msghead + _msgbody)
         

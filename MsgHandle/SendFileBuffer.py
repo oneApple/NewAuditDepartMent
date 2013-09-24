@@ -24,7 +24,7 @@ class SendFileBuffer(MsgHandleInterface.MsgHandleInterface,object):
             self.handleFileBegin(bufsize, session)
         _filebuffer = session.file.read(CommonData.MsgHandlec.FILEBLOCKSIZE)
         session.currentbytes += len(_filebuffer)
-        msgbody = _filebuffer
+        msgbody = NetSocketFun.NetPackMsgBody([_filebuffer])
         if session.currentbytes == session.totalbytes:
             msghead = self.packetMsg(MagicNum.MsgTypec.SENDFILEOVER,len(msgbody))
             session.file.close()

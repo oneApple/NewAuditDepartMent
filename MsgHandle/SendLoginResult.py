@@ -19,8 +19,8 @@ class SendLoginResult(MsgHandleInterface.MsgHandleInterface,object):
     
     def HandleMsg(self,bufsize,session):
         "返回登录结果，并保存用户名"
-        _recvmsg = NetSocketFun.NetSocketRecv(session.sockfd,bufsize)
-        _loginmsg = _recvmsg.split(CommonData.MsgHandlec.PADDING)
+        recvmsg = NetSocketFun.NetSocketRecv(session.sockfd,bufsize)
+        _loginmsg = NetSocketFun.NetUnPackMsgBody(recvmsg)
         session.usertype = _loginmsg[0]
         if _loginmsg[0] == MagicNum.UserTypec.CPUSER:
             self.__db = CPUserTable.CPUserTable()
@@ -30,8 +30,8 @@ class SendLoginResult(MsgHandleInterface.MsgHandleInterface,object):
             showmsg = "网络运营商:" + _loginmsg[1] 
         _res = self.verifyUser(_loginmsg[1], _loginmsg[2])
         if  _res != False:
-            msgbody = session.control.view.username.encode("utf8") + CommonData.MsgHandlec.PADDING + str(_res)
-            msgbody = repr(msgbody)
+            msglist = [session.control.view.username.encode("utf8"),str(_res)]
+            msgbody = NetSocketFun.NetPackMsgBody(msglist)
             msghead = self.packetMsg(MagicNum.MsgTypec.LOGINSUCCESS,len(msgbody))
             NetSocketFun.NetSocketSend(session.sockfd,msghead + msgbody)
             session.peername = _loginmsg[1]

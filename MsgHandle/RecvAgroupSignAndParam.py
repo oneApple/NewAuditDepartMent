@@ -21,7 +21,7 @@ class RecvAgroupSignAndParam(MsgHandleInterface.MsgHandleInterface,object):
         _cfd = ConfigData.ConfigData()
         _rsa = Rsa.Rsa(_cfd.GetKeyPath())
         _plaintext = _rsa.DecryptByPrikey(ciphertext)
-        _plist = _plaintext.split(CommonData.MsgHandlec.PADDING)
+        _plist = NetSocketFun.NetUnPackMsgBody(_plaintext)
         if session.sessionkey == _plist[0]:
             self.__aparam = _plist[1:]
             return True
@@ -64,12 +64,12 @@ class RecvAgroupSignAndParam(MsgHandleInterface.MsgHandleInterface,object):
         
         self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, "Ａ组采样过程:",True)
         _gvs = GetVideoSampling.GetVideoSampling(_filename,*_aparam)
-        self.__sampling = CommonData.MsgHandlec.PADDING.join(_gvs.GetSampling())
+        self.__sampling = NetSocketFun.NetPackMsgBody(_gvs.GetSampling())
         
     def addMediaToTable(self,session,sign,hash):
         "将收到的文件名，对端名，A组参数，A组签名添加到数据库"
         _db = MediaTable.MediaTable()
-        _value = [session.filename.decode("utf8"),session.peername,CommonData.MsgHandlec.PADDING.join(self.__aparam),sign,hash]
+        _value = [session.filename.decode("utf8"),session.peername,"".join(self.__aparam),sign,hash]
         _db.Connect()
         _db.AddNewMedia(_value)
         _db.CloseCon()         
@@ -78,7 +78,7 @@ class RecvAgroupSignAndParam(MsgHandleInterface.MsgHandleInterface,object):
         "分组验证"
         self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, "分组进行比对:",True)
         difList = []
-        localhash = self.__sampling.split(CommonData.MsgHandlec.PADDING)
+        localhash = NetSocketFun.NetUnPackMsgBody(self.__sampling)
         for i in range(len(recvhash)):
             try:
                 if localhash[i] != recvhash[i]:
@@ -119,29 +119,31 @@ class RecvAgroupSignAndParam(MsgHandleInterface.MsgHandleInterface,object):
     
     def HandleMsg(self,bufsize,session):
         "如果收到的签名与本地采样符合，则说明文件未在传输中被更改，则添加到数据库"
-        recvbuffer = NetSocketFun.NetSocketRecv(session.sockfd,bufsize)
-        _msglist = recvbuffer.split(CommonData.MsgHandlec.PADDING)
+        recvmsg = NetSocketFun.NetSocketRecv(session.sockfd,bufsize)
+        _msglist = NetSocketFun.NetUnPackMsgBody(recvmsg)
         if self.handleDhkeyAndAgroupParam(_msglist[0], session) == True:
             showmsg = "会话密钥验证成功"
             self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
             self.samplingAgroup(session)
             
             showmsg = "收到采样结果并解密:\n(1)A组参数：\n(帧总数,分组参数,帧间隔位数,混沌初值,分支参数)\n(" + ",".join(self.__aparam) \
-                + ")\n(2)A组采样签名：" + _msglist[1] + "\n(3)本地A组采样：" + self.__sampling
+                + ")\n(2)A组采样签名：" + _msglist[1] + "\n(3)本地A组采样：" + CommonData.MsgHandlec.SHOWPADDING.join(NetSocketFun.NetUnPackMsgBody(self.__sampling))
             self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
-            self.compareSamplingHash(_msglist[2:])
+            self.compareSamplingHash(NetSocketFun.NetUnPackMsgBody(_msglist[2:][0]))
             
             if self.verifySign(_msglist[1], session) == True:
                 self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_REFRESHSTATIC, ["","接收文件"])
-                self.addMediaToTable(session,_msglist[1],CommonData.MsgHandlec.PADDING.join(_msglist[2:]))
+                self.addMediaToTable(session,_msglist[1],"".join(_msglist[2:]))
                 msghead = self.packetMsg(MagicNum.MsgTypec.RECVMEDIASUCCESS,0)
                 NetSocketFun.NetSocketSend(session.sockfd,msghead)
                 self.deltempFile(session)
                 self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_REFRESHFILETABLE, "")
                 return
+            else:
+                showmsg = "采样签名验证失败"
         else:
             showmsg = "会话密钥验证失败,发送方为恶意用户"
-            self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
+        self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
         self.deltempFile(session)
         msghead = self.packetMsg(MagicNum.MsgTypec.IDENTITYVERIFYFAILED,0)
         NetSocketFun.NetSocketSend(session.sockfd,msghead)

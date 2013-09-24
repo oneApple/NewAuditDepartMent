@@ -17,7 +17,8 @@ class NetConnect:
         "请求审核" 
         self.filename = filename
         self.cparams = cparams
-        _msgbody = filename[-filename[::-1].index("/"):].encode("utf-8")
+        msglist = [filename[-filename[::-1].index("/"):].encode("utf-8")]
+        _msgbody = NetSocketFun.NetPackMsgBody(msglist)
         _msghead = struct.pack(CommonData.MsgHandlec.MSGHEADTYPE,MagicNum.MsgTypec.REQAUDITRETURN,len(_msgbody) )
         NetSocketFun.NetSocketSend(self.__Sockfd,_msghead + _msgbody)
         

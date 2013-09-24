@@ -19,7 +19,7 @@ class RecvHashElgamal1(MsgHandleInterface.MsgHandleInterface,object):
         _res = _db.searchMedia(session.auditfile,session.audituser)
         _db.CloseCon()
         _hbs = HashBySha1.HashBySha1()
-        return _res[0][4].split(CommonData.MsgHandlec.PADDING)[self.__index].encode("ascii")
+        return NetSocketFun.NetUnPackMsgBody(_res[0][4])[self.__index].encode("ascii")
     
     def getCipherText(self,session):
         "对会话密钥进行加密"
@@ -32,19 +32,21 @@ class RecvHashElgamal1(MsgHandleInterface.MsgHandleInterface,object):
         elgamal1 = session.elgamal.EncryptoList(Elgamal.StringToList(self.__ahash))
         elgamal2 = session.elgamal.EncryptoList(self.__recvelgamal1)
         #self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT,showmsg)
-        _cipher = self.getCipherText(session)
-        _plaintext = str(self.__index) + CommonData.MsgHandlec.PADDING + Elgamal.GetStructFmt(elgamal1) + CommonData.MsgHandlec.PADDING + \
-                     "".join(elgamal1) + CommonData.MsgHandlec.PADDING + \
-                     Elgamal.GetStructFmt(elgamal2) + CommonData.MsgHandlec.PADDING + \
-                     "".join(elgamal2)
+        msglist = []
+        msglist.append(self.getCipherText(session))
+        msglist.append(str(self.__index)) 
+        msglist.append(Elgamal.GetStructFmt(elgamal1))
+        msglist.append("".join(elgamal1))
+        msglist.append(Elgamal.GetStructFmt(elgamal2))
+        msglist.append("".join(elgamal2))
         #showmsg = "\n(3)第一次加密结果:" + ",".join(elgamal1) + "\n(4)第二次加密结果:" + ",".join(elgamal2)
         #self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT,showmsg)
-        return _cipher + CommonData.MsgHandlec.PADDING + _plaintext
+        return msglist
     
     def handRecvMsg(self,session,msgList):
         _cfg = ConfigData.ConfigData()
         _rsa = Rsa.Rsa(_cfg.GetKeyPath())
-        _plaint = _rsa.DecryptByPrikey(msgList[0]).split(CommonData.MsgHandlec.PADDING)
+        _plaint = NetSocketFun.NetUnPackMsgBody(_rsa.DecryptByPrikey(msgList[0]))
         if _plaint[0] == session.sessionkey:
             import struct, string
             self.__index = string.atoi(msgList[1])
@@ -62,10 +64,10 @@ class RecvHashElgamal1(MsgHandleInterface.MsgHandleInterface,object):
             return False
     
     def HandleMsg(self,bufsize,session):
-        recvbuffer = NetSocketFun.NetSocketRecv(session.sockfd,bufsize)
-        msgList = recvbuffer.split(CommonData.MsgHandlec.PADDING)
+        recvmsg = NetSocketFun.NetSocketRecv(session.sockfd,bufsize)
+        msgList = NetSocketFun.NetUnPackMsgBody(recvmsg)
         if self.handRecvMsg(session, msgList):
-            msgbody = self.packMsgBody(session)
+            msgbody = NetSocketFun.NetPackMsgBody(self.packMsgBody(session))
             msghead = self.packetMsg(MagicNum.MsgTypec.SENDHASHELGAMAL12,len(msgbody))
             NetSocketFun.NetSocketSend(session.sockfd,msghead + msgbody)
         else:

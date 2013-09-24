@@ -14,7 +14,8 @@ class RecvFileBuffer(MsgHandleInterface.MsgHandleInterface,object):
         "接收文件块"
         if not session.currentbytes:
             self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT,"开始接收文件(" + session.filename + ") ...")
-        recvbuffer = NetSocketFun.NetSocketRecv(session.sockfd,bufsize)
+        recvmsg = NetSocketFun.NetSocketRecv(session.sockfd,bufsize)
+        recvbuffer = NetSocketFun.NetUnPackMsgBody(recvmsg)[0]
         session.currentbytes += len(recvbuffer)
         session.file.write(recvbuffer)
         msghead = self.packetMsg(MagicNum.MsgTypec.REQFILEBUFFER, 0)

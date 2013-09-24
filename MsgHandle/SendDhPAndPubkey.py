@@ -2,7 +2,7 @@
 _metaclass_ = type
 
 from MsgHandle import MsgHandleInterface
-from GlobalData import CommonData, MagicNum, ConfigData
+from GlobalData import MagicNum, ConfigData
 from CryptoAlgorithms import DiffieHellman, Rsa
 from NetCommunication import NetSocketFun
 
@@ -17,12 +17,12 @@ class SendDhPAndPubkey(MsgHandleInterface.MsgHandleInterface,object):
         _cfg = ConfigData.ConfigData()
         _rsa = Rsa.Rsa(_cfg.GetKeyPath())    
         _dhpubkey = str(session.dhkey.getPubkey())
-        return str(p) , _dhpubkey ,_rsa.SignByPrikey(str(p)),_rsa.SignByPrikey(_dhpubkey)
+        return [str(p) , _dhpubkey ,_rsa.SignByPrikey(str(p)),_rsa.SignByPrikey(_dhpubkey)]
                                                                                  
     def HandleMsg(self,bufsize,session):
         "发送迪菲参数p和公钥，及该消息的签名"                
-        _dhkeymsg = self.getDhpAndga(session)
-        msgbody = CommonData.MsgHandlec.PADDING.join(_dhkeymsg)
+        msglist = self.getDhpAndga(session)
+        msgbody = NetSocketFun.NetPackMsgBody(msglist)
         msghead = self.packetMsg(MagicNum.MsgTypec.SENDDHPANDPUBKEY ,len(msgbody))
         NetSocketFun.NetSocketSend(session.sockfd,msghead + msgbody)            
         #showmsg = "发送迪菲赫尔曼\n(1)参数p：" + _dhkeymsg[0] + "\n(2)公钥:" + _dhkeymsg[1]

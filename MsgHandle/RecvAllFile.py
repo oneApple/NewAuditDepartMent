@@ -12,7 +12,8 @@ class RecvAllFile(MsgHandleInterface.MsgHandleInterface,object):
         
     def HandleMsg(self,bufsize,session):
         "接收所有文件"
-        recvbuffer = NetSocketFun.NetSocketRecv(session.sockfd,bufsize)
+        recvmsg = NetSocketFun.NetSocketRecv(session.sockfd,bufsize)
+        recvbuffer = NetSocketFun.NetUnPackMsgBody(recvmsg)[0]
         session.file.write(recvbuffer)
         session.file.close()
         msghead = self.packetMsg(MagicNum.MsgTypec.REQAGROUP, 0)

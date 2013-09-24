@@ -26,19 +26,22 @@ class SendCgroupSignAndParam(MsgHandleInterface.MsgHandleInterface,object):
         showmsg = "C组采样过程："
         self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
         _cgvs = GetVideoSampling.GetVideoSampling(_filename,*_cparam)
-        return [str(x) for x in _cparam],  CommonData.MsgHandlec.PADDING.join(_cgvs.GetSampling())
+        return [str(x) for x in _cparam] , NetSocketFun.NetPackMsgBody(_cgvs.GetSampling())
     
     def packMsgBody(self,session):
         _cgroup = self.getCgroupHashAndParam(session)
         _cfd = ConfigData.ConfigData()
         _rsa = Rsa.Rsa(_cfd.GetKeyPath())
-        _plaintext = str(session.sessionkey) + CommonData.MsgHandlec.PADDING + CommonData.MsgHandlec.PADDING.join(_cgroup[0])
+        msglist = [str(session.sessionkey)] + _cgroup[0]
+        _plaintext = NetSocketFun.NetPackMsgBody(msglist)
         _pubkeyMsg = _rsa.EncryptByPubkey(_plaintext.encode("ascii"), session.peername)
         
         _hbs = HashBySha1.HashBySha1()
         _sign = _rsa.SignByPrikey(_hbs.GetHash(_cgroup[1].encode("ascii"),MagicNum.HashBySha1c.HEXADECIMAL))
-        _msgbody = _pubkeyMsg + CommonData.MsgHandlec.PADDING + _sign + CommonData.MsgHandlec.PADDING + _cgroup[1].encode("ascii")
-        showmsg = "发送采样结果：\n(1)C组参数：" + ",".join(_cgroup[0]) + "\n(2)C组采样:" + _cgroup[1] + "\n(3)C组采样签名：" + _sign 
+        msglist = [_pubkeyMsg,_sign,_cgroup[1].encode("ascii")]
+        _msgbody = NetSocketFun.NetPackMsgBody(msglist)
+        showmsg = "发送采样结果：\n(1)C组参数：" + ",".join(_cgroup[0]) + "\n(2)C组采样:" + \
+                  CommonData.MsgHandlec.SHOWPADDING.join(NetSocketFun.NetUnPackMsgBody(_cgroup[1])) + "\n(3)C组采样签名：" + _sign 
         showmsg += "\n等待文件验证..."
         self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
         return _msgbody

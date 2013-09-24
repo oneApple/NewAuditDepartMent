@@ -15,6 +15,11 @@ class WindowConfig:
     def GetSystemNameBackColor(self):
         return "bisque"
     
+    def GetShowTextFont(self):
+        import wx
+        font = wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL)
+        return font
+    
     def GetShowTextFontColor1(self):
         return "orange"
     
@@ -34,6 +39,9 @@ class WindowConfig:
     
     def GetPanelBackColor(self):
         return "pink"
+    
+    def GetTableLabelSize(self):
+        return 25
     
     def GetTableChoseFontColor(self):
         return "white"

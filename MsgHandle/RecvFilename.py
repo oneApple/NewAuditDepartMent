@@ -22,7 +22,8 @@ class RecvFilename(MsgHandleInterface.MsgHandleInterface,object):
             os.mkdir(self.___ownPath)
     
     def HandleMsg(self,bufsize,session):
-        recvbuffer = NetSocketFun.NetSocketRecv(session.sockfd,bufsize)
+        recvmsg = NetSocketFun.NetSocketRecv(session.sockfd,bufsize)
+        recvbuffer = NetSocketFun.NetUnPackMsgBody(recvmsg)[0]
         self.createMediaDir(session)
         session.filename = recvbuffer
         _localfilename = self.___ownPath + "/" + session.filename

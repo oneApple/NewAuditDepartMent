@@ -89,10 +89,8 @@ class MyFrame(wx.Frame):
     def createShowTextCtrl(self):
         "创建右下方的文本显示框"
         _panel = self.createPanel(self.__panel_top)
-        
-        Font= wx.Font(25, wx.MODERN, wx.NORMAL, wx.NORMAL)
         self.__showText = wx.TextCtrl(_panel,style=wx.TE_MULTILINE|wx.HSCROLL|wx.TE_READONLY)  
-        self.__showText.SetFont(Font)
+        self.__showText.SetFont(self.wcfg.GetShowTextFont())
         self.__showText.SetBackgroundColour(self.wcfg.GetShowTextBackColor())
         self.createBox([self.__showText,], _panel, self.__hbox, "信息显示区",3)
     
@@ -315,7 +313,7 @@ class MyFrame(wx.Frame):
         self.__grid = wx.grid.Grid(_panel)
         table = MatrixTable.MatrixTable(self.getFileList(),["文件名","所有者","状态"],[i for i in range(3)])
         self.__grid.SetTable(table, True)
-        self.__grid.SetRowLabelSize(15)
+        self.__grid.SetRowLabelSize(self.wcfg.GetTableLabelSize())
         self.Bind(wx.grid.EVT_GRID_LABEL_LEFT_CLICK, self.evtGridRowLabelLeftClick)
         
         self.createBox([self.__grid,], _panel, vbox, "文件操作区",partition = 2)

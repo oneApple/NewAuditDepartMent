@@ -42,3 +42,20 @@ def NetSocketSend(socketfd,sendstr):
             send_size += sock_size
         total_size += send_size
     return total_size
+
+def NetPackMsgBody(msglist):
+    from GlobalData import CommonData
+    fmtstr = ""
+    for i in range(len(msglist)):
+        fmtstr += str(len(msglist[i])) + "s"
+    return fmtstr + CommonData.MsgHandlec.PADDING + "".join(msglist)
+
+def NetUnPackMsgBody(msgstr):
+    from GlobalData import CommonData
+    import struct
+    sp = msgstr.index(CommonData.MsgHandlec.PADDING) 
+    print msgstr[:sp]
+    print len(msgstr[sp + len(CommonData.MsgHandlec.PADDING):])
+    return struct.unpack(msgstr[:sp].encode("ascii"),msgstr[sp + len(CommonData.MsgHandlec.PADDING):])
+
+    
