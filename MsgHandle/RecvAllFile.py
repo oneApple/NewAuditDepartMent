@@ -18,7 +18,8 @@ class RecvAllFile(MsgHandleInterface.MsgHandleInterface,object):
         session.file.close()
         msghead = self.packetMsg(MagicNum.MsgTypec.REQAGROUP, 0)
         NetSocketFun.NetSocketSend(session.sockfd,msghead)
-        showmsg = "文件接收完毕:\n(1)文件名:" + session.filename + "\n(2)文件大小:" + str(session.currentbytes + bufsize)
+        filesize = float((session.currentbytes + bufsize)) / (1024 * 1024)
+        showmsg = "文件接收完毕:\n(1)文件名:" + session.filename + "\n(2)文件大小（MB）:" + str(filesize)
         self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
         session.currentbytes = 0
 

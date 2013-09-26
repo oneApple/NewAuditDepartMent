@@ -12,6 +12,7 @@ class ViewPublisherc:
     MAINFRAME_APPENDTEXT = "mainframeappendtext"
     MAINFRAME_REFRESHSTATIC = "mainframerefstatic"
     MAINFRAME_REFRESHFILETABLE = "mainframereffiletable"
+    FULLFRAME_APPENDTEXT = "fullframeappendtext"
 
 class MainFramec:
     "菜单"

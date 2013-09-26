@@ -29,6 +29,20 @@ class WindowConfig:
     def GetShowTextBackColor(self):
         return "gainsboro"
     
+    def GetFullShowTextFont(self):
+        import wx
+        font = wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL)
+        return font
+    
+    def GetFullShowTextFontColor1(self):
+        return "green"
+    
+    def GetFullShowTextFontColor2(self):
+        return "white"
+    
+    def GetFullShowTextBackColor(self):
+        return "black"
+    
     def GetStaticTextFont(self):
         import wx
         font = wx.Font(15, wx.NORMAL, wx.NORMAL, wx.NORMAL)

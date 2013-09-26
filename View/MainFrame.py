@@ -6,7 +6,7 @@ from NetCommunication import NetAccept
 from GlobalData import CommonData, MagicNum, ConfigData, WindowConfig
 import AlterUserPermissionsDialog
 from DataBase import MediaTable
-import MatrixTable
+import MatrixTable ,FullScreenFrame
 
 
 class MyFrame(wx.Frame):
@@ -45,6 +45,8 @@ class MyFrame(wx.Frame):
         _rke = RsaKeyExchange.RsaKeyExchange()
         _rke.GenerateRsaKey()
         
+        self.fullframe = FullScreenFrame.FullScreenFrame(self,-1,"信息显示区")    
+        
         _netaccept = NetAccept.NetAccept(self)
         _netaccept.startNetConnect()
     
@@ -77,6 +79,8 @@ class MyFrame(wx.Frame):
         msg = recvmsg.data[0].decode("utf8")
         msg += "\n"
         
+        wx.CallAfter(Publisher().sendMessage,CommonData.ViewPublisherc.FULLFRAME_APPENDTEXT,recvmsg.data)
+        
         _isChangeColor = recvmsg.data[1]
         if _isChangeColor:
             if self.__showTextColor:
@@ -86,13 +90,20 @@ class MyFrame(wx.Frame):
             self.__showTextColor = not self.__showTextColor
         self.__showText.AppendText(msg)
     
+    def evtShowTextDoubleClick(self,evt):
+        self.fullframe.ShowFullScreenFrame()
+        self.Hide()
+    
     def createShowTextCtrl(self):
         "创建右下方的文本显示框"
         _panel = self.createPanel(self.__panel_top)
-        self.__showText = wx.TextCtrl(_panel,style=wx.TE_MULTILINE|wx.HSCROLL|wx.TE_READONLY)  
+        
+        self.__showText = wx.TextCtrl(_panel, style=wx.TE_MULTILINE | wx.HSCROLL | wx.TE_READONLY)  
         self.__showText.SetFont(self.wcfg.GetShowTextFont())
         self.__showText.SetBackgroundColour(self.wcfg.GetShowTextBackColor())
-        self.createBox([self.__showText,], _panel, self.__hbox, "信息显示区",3)
+        self.__showText.Bind(wx.EVT_LEFT_DCLICK, self.evtShowTextDoubleClick)
+        
+        self.createBox([self.__showText, ], _panel, self.__hbox, "信息显示区", 3)
     
     def createPanel(self,outpanel,color = "mistyrose"):
         _panel = wx.Panel(outpanel,-1)
@@ -439,6 +450,7 @@ class MyFrame(wx.Frame):
     
     def menuClearDisplayCmd(self,event):
         self.__showText.Clear()
+        self.fullframe.clearShowText()
     
     def Run(self):
         self.Center()

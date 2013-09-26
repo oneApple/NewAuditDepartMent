@@ -31,7 +31,8 @@ class SendFileBuffer(MsgHandleInterface.MsgHandleInterface,object):
             session.currentbytes = 0
             
             _filename = session.filename[-session.filename[::-1].index("/"):].encode("utf-8")
-            showmsg = "文件发送完毕:\n(1)文件名:" + _filename + "\n(2)文件大小:" + str(session.totalbytes)
+            filesize = float(session.totalbytes) / (1024 * 1024)
+            showmsg = "文件发送完毕:\n(1)文件名:" + _filename + "\n(2)文件大小（MB）:" + str(filesize)
             self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
         else:
             msghead = self.packetMsg(MagicNum.MsgTypec.SENDFILEBUFFER,len(msgbody))
