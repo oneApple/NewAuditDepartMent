@@ -4,11 +4,11 @@ _metaclass_ = type
 
 class ConfigData:
     "获取配置数据"
+    CONFIGFILE = "./Config.cfg"
     def __init__(self):
         "配置文件为CONFIGFILE"
-        CONFIGFILE = "./Config.cfg"
         self.__cfg = ConfigParser()
-        self.__cfg.read(CONFIGFILE)
+        self.__cfg.read(ConfigData.CONFIGFILE)
         
     def GetDbPath(self):
         "获取数据库路径"

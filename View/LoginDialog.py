@@ -1,14 +1,30 @@
 # -*- coding: UTF-8 -*-
 import wx
 
-import ValidaDialog
-import RegisterDialog
-from GlobalData import MagicNum
+import ValidaDialog,RegisterDialog
+from GlobalData import MagicNum, ConfigData
 from DataBase import APUserTable
 
 class LoginDialog(ValidaDialog.ValidaDialog,object):
     def __init__(self):
         super(LoginDialog,self).__init__("登录",MagicNum.ValidaDialogc.IMAGEBUTTON)
+        self.CheckConfig()
+    
+    def CheckConfig(self):
+        try:
+            cfg = ConfigData.ConfigData()
+            pathmap = {cfg.GetDbPath():"数据库配置不正确",
+               cfg.GetYVectorFilePath():"采样存放路径配置不正确",
+               cfg.GetFfmpegPathAndArgs()[0]:"ffmpeg程序配置不正确",
+               cfg.GetKeyPath():"密钥路径配置不正确"
+               }
+            for path in pathmap:
+                import os
+                if not os.path.exists(path):
+                    self.tryAgain(pathmap[path])
+        except Exception,e:
+            self.tryAgain("配置文件不存在或路径错误")
+            
     
     def getTextLabel(self):
         _labelList = ["用户名", "密码"]
