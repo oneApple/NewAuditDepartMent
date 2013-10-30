@@ -55,17 +55,23 @@ class RecvAgroupSignAndParam(MsgHandleInterface.MsgHandleInterface,object):
         _efm.Run()
         _efm.WaitForProcess()
         
-        import os
-        filesize = float(os.path.getsize(_meidaPath)) / (1024 * 1024)
-        showmsg = "采样完成:\n(1)总帧数：" + self.getFrameNum(session.filename) + \
-                  "\n(2)文件大小（MB）：" + str(filesize)
-        self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
+#        import os
+#        filesize = float(os.path.getsize(_meidaPath)) / (1024 * 1024)
+#        showmsg = "采样完成:\n(1)I帧总数：" + self.getFrameNum(session.filename) + \
+#                  "\n(2)文件大小（MB）：" + str(filesize)
+#        self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
         
         _filename = session.filename[:session.filename.index(".")]
         
         self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, "Ａ组采样过程:",True)
         _gvs = GetVideoSampling.GetVideoSampling(_filename,*_aparam)
         self.__sampling = NetSocketFun.NetPackMsgBody(_gvs.GetSampling())
+        
+        import os
+        filesize = float(os.path.getsize(_meidaPath)) / (1024 * 1024)
+        showmsg = "采样完成:\n(1)I帧总数：" + self.getFrameNum(session.filename) + \
+                  "\n(2)文件大小（MB）：" + str(filesize)
+        self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
         
     def addMediaToTable(self,session,sign,hash):
         "将收到的文件名，对端名，A组参数，A组签名添加到数据库"
@@ -123,13 +129,15 @@ class RecvAgroupSignAndParam(MsgHandleInterface.MsgHandleInterface,object):
         recvmsg = NetSocketFun.NetSocketRecv(session.sockfd,bufsize)
         _msglist = NetSocketFun.NetUnPackMsgBody(recvmsg)
         if self.handleDhkeyAndAgroupParam(_msglist[0], session) == True:
-            showmsg = "会话密钥验证成功"
+            showmsg = "会话密钥验证成功,"
+            showmsg += "解密获取参数及采样结果:\n(1)A组参数：\n(帧总数,分组参数,帧间隔位数,混沌初值,分支参数)\n(" + ",".join(self.__aparam) \
+                + ")\n(2)A组采样签名：" + _msglist[1] + "\n(3)本地A组采样：" + CommonData.MsgHandlec.SHOWPADDING.join(NetSocketFun.NetUnPackMsgBody(_msglist[2:][0]))
             self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
             self.samplingAgroup(session)
             
-            showmsg = "收到采样结果并解密:\n(1)A组参数：\n(帧总数,分组参数,帧间隔位数,混沌初值,分支参数)\n(" + ",".join(self.__aparam) \
-                + ")\n(2)A组采样签名：" + _msglist[1] + "\n(3)本地A组采样：" + CommonData.MsgHandlec.SHOWPADDING.join(NetSocketFun.NetUnPackMsgBody(self.__sampling))
-            self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
+#            showmsg = "收到采样结果并解密:\n(1)A组参数：\n(帧总数,分组参数,帧间隔位数,混沌初值,分支参数)\n(" + ",".join(self.__aparam) \
+#                + ")\n(2)A组采样签名：" + _msglist[1] + "\n(3)本地A组采样：" + CommonData.MsgHandlec.SHOWPADDING.join(NetSocketFun.NetUnPackMsgBody(self.__sampling))
+#            self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
             self.compareSamplingHash(NetSocketFun.NetUnPackMsgBody(_msglist[2:][0]))
             
             if self.verifySign(_msglist[1], session) == True:
