@@ -16,7 +16,10 @@ class ViewPublisherc:
 
 class MainFramec:
     "菜单"
-    usermenu = {"用户审核":"UserAudit","用户删除":"DeleteUser"}
+    cpusermenu = {"用户审核":"CPUserAudit","用户删除":"DeleteCPUser"}
+    nousermenu = {"用户审核":"NOUserAudit","用户删除":"DeleteNOUser"}
+    apusermenu = {"用户删除":"DeleteAPUser"}
+    usermenu = {"审核部门用户管理":apusermenu,"内容提供商用户管理":cpusermenu,"网络运营商用户管理":nousermenu}
     toolmenu = {"清理屏幕".decode("utf8"):"ClearDisplay"}
     menuMap = {"用户管理":usermenu,"工具":toolmenu}
     disablemenu = ["用户审核","用户删除"]

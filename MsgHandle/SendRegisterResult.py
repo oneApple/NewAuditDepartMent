@@ -26,7 +26,7 @@ class SendRegisterResult(MsgHandleInterface.MsgHandleInterface,object):
     def HandleMsg(self,bufsize,session):
         "返回注册信息并保存用户名"
         recvmsg = NetSocketFun.NetSocketRecv(session.sockfd,bufsize)
-        _loginmsg = NetSocketFun.NetUnPackMsgBody(recvmsg) + [MagicNum.CPUserTablec.UNACCEPT]
+        _loginmsg = NetSocketFun.NetUnPackMsgBody(recvmsg) + (MagicNum.CPUserTablec.UNACCEPT,)
         if len(_loginmsg) == 6:
             self.__db = CPUserTable.CPUserTable()
         elif len(_loginmsg) == 4:

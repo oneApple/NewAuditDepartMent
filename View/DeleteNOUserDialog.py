@@ -1,18 +1,18 @@
 # -*- coding: UTF-8 -*-
 
 import wx
-from DataBase import CPUserTable
-from GlobalData import MagicNum
+from DataBase import NOUserTable
+from GlobalData import MagicNum,ConfigData
    
-class DeleteUserDialog(wx.SingleChoiceDialog):
+class DeleteNOUserDialog(wx.SingleChoiceDialog):
     def __init__(self,title):
         self.__userlist = self.getUserList()
-        super(DeleteUserDialog,self).__init__(None,"删除用户",title,self.__userlist)
+        super(DeleteNOUserDialog,self).__init__(None,"删除用户",title,self.__userlist)
    
     def getUserList(self):
-        _db = CPUserTable.CPUserTable()
+        _db = NOUserTable.NOUserTable()
         _db.Connect()
-        _sql = "select name from CPUserTable"
+        _sql = "select name from NOUserTable"
         _res = _db.Search(_sql)
         _db.CloseCon()
         _userlist = []
@@ -20,12 +20,24 @@ class DeleteUserDialog(wx.SingleChoiceDialog):
             _userlist.append(name[0])
         return _userlist
    
+    def deltempFile(self,username):
+        import os
+        _cfg = ConfigData.ConfigData()
+        _keypath = _cfg.GetKeyPath()
+        _key = _keypath + "/" + username 
+        os.remove(_key + "/pubkey.pkl")
+        os.rmdir(_key)  
+   
     def secondButtonFun(self):
         _choice = self.GetStringSelection()
-        _db = CPUserTable.CPUserTable()
+        _db = NOUserTable.NOUserTable()
         _db.Connect()
         _db.deleteUser(_choice)
         _db.CloseCon()
+        try:
+            self.deltempFile(_choice)
+        except:
+            pass
         
     def firstButtonFun(self):
         pass

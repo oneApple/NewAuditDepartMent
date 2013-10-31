@@ -36,7 +36,7 @@ class RegisterDialog(ValidaDialog.ValidaDialog,object):
             self.tryAgain("密码输入不一致")
         else:
             self.addNewUser(_inputlist)
-            self.SwitchView("msg")
+            self.SwitchView(_inputlist[0])
             
         
 if __name__=='__main__':

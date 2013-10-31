@@ -39,8 +39,6 @@ class RecvHashElgamal1(MsgHandleInterface.MsgHandleInterface,object):
         msglist.append("".join(elgamal1))
         msglist.append(Elgamal.GetStructFmt(elgamal2))
         msglist.append("".join(elgamal2))
-        #showmsg = "\n(3)第一次加密结果:" + ",".join(elgamal1) + "\n(4)第二次加密结果:" + ",".join(elgamal2)
-        #self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT,showmsg)
         return msglist
     
     def handRecvMsg(self,session,msgList):
@@ -54,6 +52,9 @@ class RecvHashElgamal1(MsgHandleInterface.MsgHandleInterface,object):
             #self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT,showmsg)
             session.elgamal = Elgamal.Elgamal(*[string.atol(s) for s in _plaint[1:]])
             self.__recvelgamal1 = struct.unpack(msgList[2],msgList[3])
+            showmsg = "进行第一次加密，第一次加密结果发送给NO\n"
+            showmsg += "进行第二次加密，第二次加密结果发送给NO"
+            self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT,showmsg)
             showmsg = "A组采样的elgamal加密第 " + msgList[1] + " 组并进行验证"# + ",".join(self.__recvelgamal1)
             self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT,showmsg)
             if self.__index == session.elgamallen:

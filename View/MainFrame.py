@@ -4,7 +4,6 @@ from wx.lib.pubsub  import Publisher
 
 from NetCommunication import NetAccept
 from GlobalData import CommonData, MagicNum, ConfigData, WindowConfig
-import AlterUserPermissionsDialog
 from DataBase import MediaTable
 import MatrixTable ,FullScreenFrame
 
@@ -439,13 +438,34 @@ class MyFrame(wx.Frame):
             menuitem = parentMenu.Append(-1,label)
             self.Bind(wx.EVT_MENU, getattr(self,"menu" + child + "Cmd"), menuitem)
         
-    def menuUserAuditCmd(self, event):
-        _dlg = AlterUserPermissionsDialog.AlterUserPermissionDialog("选择用户",MagicNum.CPUserTablec.UNACCEPT)
+    def menuCPUserAuditCmd(self, event):
+        import AlterCPUserPermissionsDialog
+        _dlg = AlterCPUserPermissionsDialog.AlterCPUserPermissionDialog("选择用户",MagicNum.CPUserTablec.UNACCEPT)
         _dlg.Run()
     
-    def menuDeleteUserCmd(self,event):
-        import DeleteUserDialog
-        _dlg = DeleteUserDialog.DeleteUserDialog("删除用户")
+    def menuDeleteCPUserCmd(self,event):
+        import DeleteCPUserDialog
+        _dlg = DeleteCPUserDialog.DeleteCPUserDialog("删除用户")
+        _dlg.Run()
+    
+    def menuNOUserAuditCmd(self, event):
+        import AlterNOUserPermissionsDialog
+        _dlg = AlterNOUserPermissionsDialog.AlterNOUserPermissionDialog("选择用户",MagicNum.CPUserTablec.UNACCEPT)
+        _dlg.Run()
+    
+    def menuDeleteNOUserCmd(self,event):
+        import DeleteNOUserDialog
+        _dlg = DeleteNOUserDialog.DeleteNOUserDialog("删除用户")
+        _dlg.Run()
+    
+    def menuAPUserAuditCmd(self, event):
+        import AlterAPUserPermissionsDialog
+        _dlg = AlterAPUserPermissionsDialog.AlterAPUserPermissionDialog("选择用户",MagicNum.CPUserTablec.UNACCEPT)
+        _dlg.Run()
+    
+    def menuDeleteAPUserCmd(self,event):
+        import DeleteAPUserDialog
+        _dlg = DeleteAPUserDialog.DeleteAPUserDialog("删除用户")
         _dlg.Run()
     
     def menuClearDisplayCmd(self,event):

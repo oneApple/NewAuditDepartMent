@@ -1,20 +1,19 @@
 # -*- coding: UTF-8 -*-
 
 import wx
-from DataBase import CPUserTable
+from DataBase import APUserTable
 from GlobalData import MagicNum
    
-class AlterUserPermissionDialog(wx.SingleChoiceDialog):
-    def __init__(self,title,type):
-        self.__type = type
-        self.__userlist = self.getUserList(type)
-        super(AlterUserPermissionDialog,self).__init__(None,"选择用户",title,self.__userlist)
+class DeleteAPUserDialog(wx.SingleChoiceDialog):
+    def __init__(self,title):
+        self.__userlist = self.getUserList()
+        super(DeleteAPUserDialog,self).__init__(None,"删除用户",title,self.__userlist)
    
-    def getUserList(self,type):
-        _db = CPUserTable.CPUserTable()
+    def getUserList(self):
+        _db = APUserTable.APUserTable()
         _db.Connect()
-        _sql = "select name from CPUserTable where permission=?"
-        _res = _db.Search(_sql,[type])
+        _sql = "select name from APUserDB"
+        _res = _db.Search(_sql)
         _db.CloseCon()
         _userlist = []
         for name in _res:
@@ -23,9 +22,9 @@ class AlterUserPermissionDialog(wx.SingleChoiceDialog):
    
     def secondButtonFun(self):
         _choice = self.GetStringSelection()
-        _db = CPUserTable.CPUserTable()
+        _db = APUserTable.APUserTable()
         _db.Connect()
-        _db.AlterUser("permission", self.__type + 1, _choice)
+        _db.deleteUser(_choice)
         _db.CloseCon()
         
     def firstButtonFun(self):
@@ -41,6 +40,6 @@ class AlterUserPermissionDialog(wx.SingleChoiceDialog):
    
 if __name__=='__main__':
     app = wx.App()
-    f = AlterUserPermissionDialog("修改权限",MagicNum.CPUserTablec.UNACCEPT)
+    f = DeleteUserDialog("修改权限")
     f.Run()
     app.MainLoop()
