@@ -76,7 +76,7 @@ class RecvAgroupSignAndParam(MsgHandleInterface.MsgHandleInterface,object):
     def addMediaToTable(self,session,sign,hash):
         "将收到的文件名，对端名，A组参数，A组签名添加到数据库"
         _db = MediaTable.MediaTable()
-        _value = [session.filename.decode("utf8"),session.peername,"".join(self.__aparam),sign,hash]
+        _value = [session.filename.decode("utf8"),session.peername,NetSocketFun.NetPackMsgBody(self.__aparam),sign,hash]
         _db.Connect()
         _db.AddNewMedia(_value)
         _db.CloseCon()         

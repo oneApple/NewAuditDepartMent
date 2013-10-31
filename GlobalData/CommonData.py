@@ -33,3 +33,8 @@ class HashBySha1c:
 
 class SamplingFrameArrayc:
     GROUPPARAMELEN = 7
+
+class Response:
+    AP = 0
+    CP = 1
+    NO = 2
