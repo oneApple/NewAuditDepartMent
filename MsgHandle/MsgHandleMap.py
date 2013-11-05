@@ -5,7 +5,7 @@ from GlobalData.MagicNum import MsgTypec
 import SendLoginResult, SendRegisterResult, RecvAndSendDh, IdentifyVerifyFailed, RecvAuditDhGenerate, \
        RecvFilename, RecvFileBuffer, RecvAllFile, RecvAgroupSignAndParam, SendDhPAndPubkey,\
        SendFileBuffer, SendCgroupSignAndParam, RecvAuditReturnSuccess, RecvDhPubkeyAndSendDhGenerateSuccess,\
-       RecvSignElgamal1, RecvHashElgamal1, SendFileList,RecvIdentifyRes
+       RecvHashElgamal1, RecvHashElgamal2, SendFileList,RecvIdentifyRes
        
 
 class MsgHandleMap:
@@ -34,9 +34,8 @@ class MsgHandleMap:
                                
                                MsgTypec.REQIDENTIFIED:SendDhPAndPubkey.SendDhPAndPubkey(),
                                MsgTypec.SENDDHPUBKEY:RecvDhPubkeyAndSendDhGenerateSuccess.RecvDhPubkeyAndSendDhGenerateSuccess(),
-                               MsgTypec.SENDSIGNELGAMAL1:RecvSignElgamal1.RecvSignElgamal1(),
                                MsgTypec.SENDHASHELGAMAL1:RecvHashElgamal1.RecvHashElgamal1(),
-                               MsgTypec.SENDIDENTIFYRES:RecvIdentifyRes.RecvIdentifyRes(),
+                               MsgTypec.SENDHASHELGAMAL2:RecvHashElgamal2.RecvHashElgamal2(),
                                
                                MsgTypec.REQFILELIST:SendFileList.SendFileList()
                                }      
