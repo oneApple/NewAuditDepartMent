@@ -13,7 +13,7 @@ class RecvHashElgamal1(MsgHandleInterface.MsgHandleInterface,object):
         super(RecvHashElgamal1,self).__init__() 
     
     def getAgroupHash(self,auditfile,audituser):
-        "获取文件A组采样签名"
+        "获取文件A组特征提取签名"
         _db = MediaTable.MediaTable()
         _db.Connect()
         _res = _db.searchMedia(auditfile,audituser)
@@ -30,6 +30,8 @@ class RecvHashElgamal1(MsgHandleInterface.MsgHandleInterface,object):
     
     def packMsgBody(self,session,msgList):
         hashlist = NetSocketFun.NetUnPackMsgBody(self.getAgroupHash(msgList[1], msgList[2]))
+        self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_REFRESHSTATIC, [msgList[1],"正在责任认定"])   
+
         session.auditfile = msgList[1]
         session.audituser = msgList[2]
         elgamallsit = []

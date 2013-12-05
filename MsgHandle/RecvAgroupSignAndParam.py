@@ -29,7 +29,7 @@ class RecvAgroupSignAndParam(MsgHandleInterface.MsgHandleInterface,object):
             return False
     
     def verifySign(self,sign,session):
-        "验证签名与采样是否相同"
+        "验证签名与特征提取是否相同"
         _cfd = ConfigData.ConfigData()
         _rsa = Rsa.Rsa(_cfd.GetKeyPath())
         _hbs = HashBySha1.HashBySha1()
@@ -44,12 +44,12 @@ class RecvAgroupSignAndParam(MsgHandleInterface.MsgHandleInterface,object):
         return str(_framenum)
     
     def samplingAgroup(self,session):
-        "通过接收A组参数来在本地采样"
+        "通过接收A组参数来在本地特征提取"
         _aparam = [string.atoi(s) for s in self.__aparam[:3]]
         _aparam += [string.atof(s) for s in self.__aparam[3:]]
         _meidaPath = self.__mediapath + "/" + session.peername + "/" + session.filename
         #必须绝对路径才可以
-        showmsg = "正在采样 ..."
+        showmsg = "正在特征提取 ..."
         self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg)
         _efm = ExecuteFfmpeg.ExecuteFfmpeg(_meidaPath)
         _efm.Run()
@@ -57,19 +57,19 @@ class RecvAgroupSignAndParam(MsgHandleInterface.MsgHandleInterface,object):
         
 #        import os
 #        filesize = float(os.path.getsize(_meidaPath)) / (1024 * 1024)
-#        showmsg = "采样完成:\n(1)I帧总数：" + self.getFrameNum(session.filename) + \
+#        showmsg = "特征提取完成:\n(1)I帧总数：" + self.getFrameNum(session.filename) + \
 #                  "\n(2)文件大小（MB）：" + str(filesize)
 #        self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
         
         _filename = session.filename[:session.filename.index(".")]
         
-        self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, "Ａ组采样过程:",True)
+        self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, "Ａ组特征提取过程:",True)
         _gvs = GetVideoSampling.GetVideoSampling(_filename,*_aparam)
         self.__sampling = NetSocketFun.NetPackMsgBody(_gvs.GetSampling())
         
         import os
         filesize = float(os.path.getsize(_meidaPath)) / (1024 * 1024)
-        showmsg = "采样完成:\n(1)I帧总数：" + self.getFrameNum(session.filename) + \
+        showmsg = "特征提取完成:\n(1)I帧总数：" + self.getFrameNum(session.filename) + \
                   "\n(2)文件大小（MB）：" + str(filesize)
         self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
         
@@ -105,9 +105,9 @@ class RecvAgroupSignAndParam(MsgHandleInterface.MsgHandleInterface,object):
         _groupborder = [x * (_fnum / _gt) for x in range(_gt)] + [_fnum]
         
         if len(difList) == 0:
-            showmsg = "结果：采样验证成功，该文件在传输过程中未被篡改"
+            showmsg = "结果：特征提取验证成功，该文件在传输过程中未被篡改"
         else:
-            showmsg = "结果：采样验证失败，该文件在传输过程中被篡改,其中"
+            showmsg = "结果：特征提取验证失败，该文件在传输过程中被篡改,其中"
         for _dif in difList:
             showmsg += "\n第" + str(_dif) + "组存在篡改，篡改帧区间为：" + str(_groupborder[_dif]) + "-" + str(_groupborder[_dif + 1]) +"帧"
         self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg)
@@ -125,34 +125,35 @@ class RecvAgroupSignAndParam(MsgHandleInterface.MsgHandleInterface,object):
             os.rmdir(root)  
     
     def HandleMsg(self,bufsize,session):
-        "如果收到的签名与本地采样符合，则说明文件未在传输中被更改，则添加到数据库"
+        "如果收到的签名与本地特征提取符合，则说明文件未在传输中被更改，则添加到数据库"
         recvmsg = NetSocketFun.NetSocketRecv(session.sockfd,bufsize)
         _msglist = NetSocketFun.NetUnPackMsgBody(recvmsg)
         if self.handleDhkeyAndAgroupParam(_msglist[0], session) == True:
             showmsg = "会话密钥验证成功,"
-            showmsg += "解密获取参数及采样结果:\n(1)A组参数：\n(帧总数,分组参数,帧间隔位数,混沌初值,分支参数)\n(" + ",".join(self.__aparam) \
-                + ")\n(2)A组采样签名：" + _msglist[1] + "\n(3)本地A组采样：" + CommonData.MsgHandlec.SHOWPADDING.join(NetSocketFun.NetUnPackMsgBody(_msglist[2:][0]))
+            showmsg += "解密获取参数及特征提取结果:\n(1)A组参数：\n(帧总数,分组参数,帧间隔位数,混沌初值,分支参数)\n(" + ",".join(self.__aparam) \
+                + ")\n(2)A组特征提取签名：" + _msglist[1] + "\n(3)本地A组特征提取：" + CommonData.MsgHandlec.SHOWPADDING.join(NetSocketFun.NetUnPackMsgBody(_msglist[2:][0]))
             self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
             self.samplingAgroup(session)
             
-#            showmsg = "收到采样结果并解密:\n(1)A组参数：\n(帧总数,分组参数,帧间隔位数,混沌初值,分支参数)\n(" + ",".join(self.__aparam) \
-#                + ")\n(2)A组采样签名：" + _msglist[1] + "\n(3)本地A组采样：" + CommonData.MsgHandlec.SHOWPADDING.join(NetSocketFun.NetUnPackMsgBody(self.__sampling))
+#            showmsg = "收到特征提取结果并解密:\n(1)A组参数：\n(帧总数,分组参数,帧间隔位数,混沌初值,分支参数)\n(" + ",".join(self.__aparam) \
+#                + ")\n(2)A组特征提取签名：" + _msglist[1] + "\n(3)本地A组特征提取：" + CommonData.MsgHandlec.SHOWPADDING.join(NetSocketFun.NetUnPackMsgBody(self.__sampling))
 #            self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
             self.compareSamplingHash(NetSocketFun.NetUnPackMsgBody(_msglist[2:][0]))
             
             if self.verifySign(_msglist[1], session) == True:
-                self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_REFRESHSTATIC, ["","接收文件"])
                 self.addMediaToTable(session,_msglist[1],"".join(_msglist[2:]))
                 msghead = self.packetMsg(MagicNum.MsgTypec.RECVMEDIASUCCESS,0)
                 NetSocketFun.NetSocketSend(session.sockfd,msghead)
                 self.deltempFile(session)
                 self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_REFRESHFILETABLE, "")
+                self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_REFRESHSTATIC, [session.filename,"审核文件完毕"])
                 return
             else:
-                showmsg = "采样签名验证失败"
+                showmsg = "特征提取签名验证失败"
         else:
             showmsg = "会话密钥验证失败,发送方为恶意用户"
         self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
+        self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_REFRESHSTATIC, [session.filename,"审核文件完毕"])
         self.deltempFile(session)
         msghead = self.packetMsg(MagicNum.MsgTypec.IDENTITYVERIFYFAILED,0)
         NetSocketFun.NetSocketSend(session.sockfd,msghead)

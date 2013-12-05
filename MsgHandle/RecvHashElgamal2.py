@@ -12,7 +12,7 @@ class RecvHashElgamal2(MsgHandleInterface.MsgHandleInterface,object):
         super(RecvHashElgamal2,self).__init__()
     
     def getAgroupHashAndParam(self,session):
-        "获取文件A组采样参数和签名"
+        "获取文件A组特征提取参数和签名"
         _db = MediaTable.MediaTable()
         _db.Connect()
         _res = _db.searchMedia(session.auditfile,session.audituser)
@@ -45,6 +45,7 @@ class RecvHashElgamal2(MsgHandleInterface.MsgHandleInterface,object):
             self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
             showmsg = "此次验证结束"
             self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg)
+            self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_REFRESHSTATIC, [session.auditfile,"责任认定完成"])
             return True
         else:
             return False  

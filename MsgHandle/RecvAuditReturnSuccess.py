@@ -24,6 +24,7 @@ class RecvAuditReturnSuccess(MsgHandleInterface.MsgHandleInterface,object):
         _db.CloseCon()
         self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_REFRESHFILETABLE, "")
         self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, "内容端接收("+ _medianame +")及参数成功",True)
+        self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_REFRESHSTATIC, [_medianame,"审核返回完毕"])
         _msghead = self.packetMsg(MagicNum.MsgTypec.REQCLOSEMSG, 0)
         NetSocketFun.NetSocketSend(session.sockfd,_msghead)
         session.stop()

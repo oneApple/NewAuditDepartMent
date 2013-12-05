@@ -19,13 +19,18 @@ def Sampling(path,frame):
     _efm = ExecuteFfmpeg.ExecuteFfmpeg(path)
     _efm.Run()
     _efm.WaitForProcess()
+    
+    index = frame.path[::-1].find("/") 
+    _filename = frame.path[-index:] 
+    frame.frame.refreshStaticText([_filename,"预提取完毕"])
+    
     frame.frame.getFrameNum()
     frame.Destroy()
     thread.exit_thread()  
      
 class ProcessDialog(wx.Dialog):
     def __init__(self,path,frame):
-        wx.Dialog.__init__(self, None, -1, '正在采样中...',size = (400,150))
+        wx.Dialog.__init__(self, None, -1, '正在特征提取中...',size = (400,150))
         panel = wx.Panel(self, -1)
         panel.SetBackgroundColour("white")
         self.count = 0

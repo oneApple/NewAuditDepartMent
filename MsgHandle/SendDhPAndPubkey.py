@@ -24,7 +24,7 @@ class SendDhPAndPubkey(MsgHandleInterface.MsgHandleInterface,object):
         msglist = self.getDhpAndga(session)
         msgbody = NetSocketFun.NetPackMsgBody(msglist)
         msghead = self.packetMsg(MagicNum.MsgTypec.SENDDHPANDPUBKEY ,len(msgbody))
-        NetSocketFun.NetSocketSend(session.sockfd,msghead + msgbody)            
+        NetSocketFun.NetSocketSend(session.sockfd,msghead + msgbody)       
         #showmsg = "发送迪菲赫尔曼\n(1)参数p：" + _dhkeymsg[0] + "\n(2)公钥:" + _dhkeymsg[1]
         #self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg)
 

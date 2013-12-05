@@ -23,7 +23,7 @@ class SendCgroupSignAndParam(MsgHandleInterface.MsgHandleInterface,object):
 #        _efm = ExecuteFfmpeg.ExecuteFfmpeg(_meidaPath)
 #        _efm.Run()
 #        _efm.WaitForProcess()
-        showmsg = "C组采样过程："
+        showmsg = "C组特征提取过程："
         self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
         _cgvs = GetVideoSampling.GetVideoSampling(_filename,*_cparam)
         return [str(x) for x in _cparam] , NetSocketFun.NetPackMsgBody(_cgvs.GetSampling())
@@ -40,8 +40,8 @@ class SendCgroupSignAndParam(MsgHandleInterface.MsgHandleInterface,object):
         _sign = _rsa.SignByPrikey(_hbs.GetHash(_cgroup[1].encode("ascii"),MagicNum.HashBySha1c.HEXADECIMAL))
         msglist = [_pubkeyMsg,_sign,_cgroup[1].encode("ascii")]
         _msgbody = NetSocketFun.NetPackMsgBody(msglist)
-        showmsg = "发送采样结果：\n(1)C组参数：" + ",".join(_cgroup[0]) + "\n(2)C组采样:" + \
-                  CommonData.MsgHandlec.SHOWPADDING.join(NetSocketFun.NetUnPackMsgBody(_cgroup[1])) + "\n(3)C组采样签名：" + _sign 
+        showmsg = "发送特征提取结果：\n(1)C组参数：" + ",".join(_cgroup[0]) + "\n(2)C组特征提取:" + \
+                  CommonData.MsgHandlec.SHOWPADDING.join(NetSocketFun.NetUnPackMsgBody(_cgroup[1])) + "\n(3)C组特征提取签名：" + _sign 
         showmsg += "\n等待文件验证..."
         self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
         return _msgbody
