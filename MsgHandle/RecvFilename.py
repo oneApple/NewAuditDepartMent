@@ -32,4 +32,4 @@ class RecvFilename(MsgHandleInterface.MsgHandleInterface,object):
         NetSocketFun.NetSocketSend(session.sockfd,self.packetMsg(MagicNum.MsgTypec.REQDHPANDPUBKEY, 0))
         showmsg = "开始审核文件(" + recvbuffer + ")"
         self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT,showmsg,True)
-        self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_REFRESHSTATIC, [recvbuffer,"正在审核文件"])
+        self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_REFRESHSTATIC, [recvbuffer,"接收审核文件"])

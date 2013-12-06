@@ -31,6 +31,7 @@ class RecvHashElgamal2(MsgHandleInterface.MsgHandleInterface,object):
             _gt = string.atoi(self.__aparam[1])
             _groupborder = [x * (_fnum / _gt) for x in range(_gt)] + [_fnum]
             showmsg = "分组验证结果："
+            flag = True
             for index in range(1,len(msgList),2):
                 recv_elgamal2 = struct.unpack(msgList[index],msgList[index + 1])
                 local_elgamal2 = struct.unpack(session.elgamal2list[index - 1],session.elgamal2list[index])
@@ -38,6 +39,7 @@ class RecvHashElgamal2(MsgHandleInterface.MsgHandleInterface,object):
                 if not Elgamal.CompareStringList(local_elgamal2,recv_elgamal2):
                     #比较接受到的hash和本地保存的hash
                     #self.compareSamplingHash(self.__APahash,self.__NoaHash) 
+                    flag = False
                     showmsg += "\n第" + str(sindex) + "组存在篡改，篡改帧区间为：" + str(_groupborder[sindex]) + "-" + str(_groupborder[sindex + 1]) +"帧"
                 else:
                     #self.compareSamplingHash(self.__APahash,self.__NoaHash)
@@ -45,7 +47,10 @@ class RecvHashElgamal2(MsgHandleInterface.MsgHandleInterface,object):
             self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
             showmsg = "此次验证结束"
             self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg)
-            self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_REFRESHSTATIC, [session.auditfile,"责任认定完成"])
+            if flag:
+                self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_REFRESHSTATIC, [session.auditfile,"责任认定完成,不存在篡改"])
+            else:
+                self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_REFRESHSTATIC, [session.auditfile,"责任认定完成,存在篡改"])
             return True
         else:
             return False  

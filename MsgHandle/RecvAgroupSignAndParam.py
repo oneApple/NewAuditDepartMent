@@ -146,14 +146,14 @@ class RecvAgroupSignAndParam(MsgHandleInterface.MsgHandleInterface,object):
                 NetSocketFun.NetSocketSend(session.sockfd,msghead)
                 self.deltempFile(session)
                 self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_REFRESHFILETABLE, "")
-                self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_REFRESHSTATIC, [session.filename,"审核文件完毕"])
+                self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_REFRESHSTATIC, [session.filename,"接收审核文件成功"])
                 return
             else:
                 showmsg = "特征提取签名验证失败"
         else:
             showmsg = "会话密钥验证失败,发送方为恶意用户"
         self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_APPENDTEXT, showmsg,True)
-        self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_REFRESHSTATIC, [session.filename,"审核文件完毕"])
+        self.sendViewMsg(CommonData.ViewPublisherc.MAINFRAME_REFRESHSTATIC, [session.filename,"接收审核文件失败"])
         self.deltempFile(session)
         msghead = self.packetMsg(MagicNum.MsgTypec.IDENTITYVERIFYFAILED,0)
         NetSocketFun.NetSocketSend(session.sockfd,msghead)

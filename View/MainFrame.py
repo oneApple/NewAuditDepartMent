@@ -258,7 +258,7 @@ class MyFrame(wx.Frame):
         _cfg = ConfigData.ConfigData()
         _path = _cfg.GetMediaPath() + "/" + _ownername + "/" + _filename
         
-        self.refreshStaticText([_filename,"正在审核返回"])        
+        self.refreshStaticText([_filename,"审核返回文件"])        
         from NetCommunication import NetConnect
         self.netConnect = NetConnect.NetConnect(self)
         if self.netConnect.StartNetConnect(*getIpAndPort(_ownername)) == MagicNum.NetConnectc.NOTCONNECT:
